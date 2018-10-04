@@ -1,6 +1,5 @@
 using namespace std;
 
-
 // ax + by = gcd(a,b) => x ? y ?
 pair<int,int> ext_gcd(int a,int b){
     if(b){
