@@ -10,8 +10,12 @@ struct PT{
     PT(const PT &p) : x(p.x), y(p.y) {}
     PT operator + (const PT &p) const {return PT(x+p.x, y+p.y); }
     PT operator - (const PT &p) const {return PT(x-p.x, y-p.y); }
+    bool operator < (const PT &p) const {return x < p.x || (x==p.x&&y <p.y); }
+    bool operator > (const PT &p) const {return x > p.x || (x==p.x&&y >p.y); }
+    bool operator == (const PT &p) const {return x == p.x && y == p.y; }
     PT operator * (double c) const {return PT(x*c, y*c); }
     PT operator / (double c) const {return PT(x/c, y/c); }
+
     double dist(){
         return sqrt(x*x + y*y);
     }
@@ -26,7 +30,9 @@ double dist2(PT p, PT q) {return dot(p-q,p-q); }
 double cross(PT p, PT q) {return p.x*q.y - p.y*q.x;}
 
 // CCW check
-double CCW(PT a, PT b, PT c){ return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);}
+double CCW(PT a, PT b, PT c){
+    return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
+}
 // rotate a point
 PT RotateCCW90(PT p) {return PT(-p.y, p.x); }
 PT RotateCW90(PT p) {return PT(p.y, -p.x); }
@@ -243,6 +249,28 @@ bool IsSimple(const vector<PT> &p) {
     return true;
 }
 
-int main(){
 
+// convex hull , sorting and ccw
+// Graham Scan
+vector<PT> Convexhull(vector<PT> &p){
+    int n = (int)p.size();
+    int pi = 0;
+    PT tmp = PT(INF, INF);
+    for(int i = 0 ; i < n ; i++){
+        if( p[i] < tmp){
+            pi = i;
+            tmp = p[i];
+        }
+    }
+    swap(p[pi], p[0]);
+    sort(p.begin() + 1, p.end(), [&p](PT i, PT j) {
+        double t = CCW(p[0], i, j);
+        return t > 0 || (t == 0 && i < j);
+    });
+    vector<PT> stk;
+    for (int i = 0; i < n; i++) {
+        while (stk.size() > 1 && CCW(stk[stk.size() - 2], stk[stk.size() - 1], p[i]) <= 0) stk.pop_back();
+        stk.push_back(p[i]);
+    }
+    return stk;
 }
