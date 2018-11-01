@@ -274,3 +274,24 @@ vector<PT> Convexhull(vector<PT> &p){
     }
     return stk;
 }
+
+// Rotating Callipers
+// this code find Farthest Pair.
+vector<PT> Rotating_Callipers(vector<PT> &p){
+  p = Convexhull(p);
+  int sz = (int)p.size();
+  PT ra, rb;
+  double maxi = 0;
+  for (int i = 0, j = 1; i < sz; i++) {
+    while (CCW(p[i], p[(i + 1) % sz], p[i] + p[(j+1)%sz] - p[j]) > 0) j = (j + 1) % sz;
+      if (maxi < dist2(p[i], p[j])) {
+        maxi = dist2(p[i], p[j]);
+        ra = p[i];
+        rb = p[j];
+      }
+  }
+  vector<PT> ret;
+  ret.push_back(ra);
+  ret.push_back(rb);
+  return ret;
+}
